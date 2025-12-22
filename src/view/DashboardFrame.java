@@ -60,7 +60,7 @@ public class DashboardFrame extends javax.swing.JFrame {
 
         jLabel8.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(44, 62, 80));
-        jLabel8.setText("Recent Sales");
+        jLabel8.setText("Recenty added sales");
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
