@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,6 +18,7 @@ public class SalesListFrame extends javax.swing.JFrame {
      */
     public SalesListFrame() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -30,10 +32,10 @@ public class SalesListFrame extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
+        tblSalesList = new javax.swing.JTable();
+        btnBack = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -41,7 +43,7 @@ public class SalesListFrame extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 24)); // NOI18N
         jLabel1.setText("Sales List");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblSalesList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null, null},
@@ -156,36 +158,41 @@ public class SalesListFrame extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jTable1.setShowGrid(true);
-        jScrollPane1.setViewportView(jTable1);
+        tblSalesList.setShowGrid(true);
+        jScrollPane1.setViewportView(tblSalesList);
 
-        jButton6.setBackground(new java.awt.Color(52, 152, 219));
-        jButton6.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jButton6.setForeground(new java.awt.Color(255, 255, 255));
-        jButton6.setText("Back");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        btnBack.setBackground(new java.awt.Color(52, 152, 219));
+        btnBack.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
+        btnBack.setForeground(new java.awt.Color(255, 255, 255));
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                btnBackActionPerformed(evt);
             }
         });
 
-        jButton7.setBackground(new java.awt.Color(46, 204, 113));
-        jButton7.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jButton7.setForeground(new java.awt.Color(255, 255, 255));
-        jButton7.setText("Update");
-        jButton7.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+        btnUpdate.setBackground(new java.awt.Color(46, 204, 113));
+        btnUpdate.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
+        btnUpdate.setForeground(new java.awt.Color(255, 255, 255));
+        btnUpdate.setText("Update");
+        btnUpdate.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
-                jButton7MouseWheelMoved(evt);
+                btnUpdateMouseWheelMoved(evt);
+            }
+        });
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
             }
         });
 
-        jButton8.setBackground(new java.awt.Color(243, 156, 18));
-        jButton8.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jButton8.setForeground(new java.awt.Color(255, 255, 255));
-        jButton8.setText("Refresh");
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
+        btnRefresh.setBackground(new java.awt.Color(243, 156, 18));
+        btnRefresh.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
+        btnRefresh.setForeground(new java.awt.Color(255, 255, 255));
+        btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
+                btnRefreshActionPerformed(evt);
             }
         });
 
@@ -198,11 +205,11 @@ public class SalesListFrame extends javax.swing.JFrame {
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(63, 63, 63)
-                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 190, Short.MAX_VALUE)
-                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(188, 188, 188)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(49, 49, 49))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -224,26 +231,77 @@ public class SalesListFrame extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(42, 42, 42))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // This will reload the table with updated data
+    JOptionPane.showMessageDialog(this, 
+        "Table refreshed! (Data will load when we implement it)", 
+        "Refresh", 
+        JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_btnRefreshActionPerformed
 
-    private void jButton7MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_jButton7MouseWheelMoved
+    private void btnUpdateMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_btnUpdateMouseWheelMoved
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton7MouseWheelMoved
+    }//GEN-LAST:event_btnUpdateMouseWheelMoved
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        DashboardFrame dashboard = new DashboardFrame();
+    dashboard.setVisible(true);
+    this.dispose();
+    }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        try {
+        // First check if a row is selected
+        int selectedRow = tblSalesList.getSelectedRow();
+        
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, 
+                "Please select a sale from the table to update", 
+                "No Selection", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Get the selected sale's ID (assuming ID is in column 0)
+        String selectedId = tblSalesList.getValueAt(selectedRow, 0).toString();
+        
+        // Get all data from selected row
+        String name = tblSalesList.getValueAt(selectedRow, 1).toString();
+        String item = tblSalesList.getValueAt(selectedRow, 2).toString();
+        String price = tblSalesList.getValueAt(selectedRow, 3).toString();
+        String quantity = tblSalesList.getValueAt(selectedRow, 4).toString();
+        String status = tblSalesList.getValueAt(selectedRow, 5).toString();
+        String paymentStatus = tblSalesList.getValueAt(selectedRow, 6).toString();
+        String number = tblSalesList.getValueAt(selectedRow, 8).toString(); // Assuming column 8
+        
+        // Create UpdateSalesFrame
+        UpdateSalesFrame updateFrame = new UpdateSalesFrame();
+        
+        // PASS DATA TO UPDATE FRAME
+        updateFrame.setSaleData(
+            selectedId, name, item, price, quantity, 
+            status, paymentStatus, number
+        );
+        
+        updateFrame.setVisible(true);
+        this.dispose();
+        
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, 
+            "Error loading sale data: " + e.getMessage(), 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
     /**
      * @param args the command line arguments
@@ -271,12 +329,12 @@ public class SalesListFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
+    private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnUpdate;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblSalesList;
     // End of variables declaration//GEN-END:variables
 }
