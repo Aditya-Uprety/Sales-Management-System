@@ -3,7 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
+
 import javax.swing.JOptionPane;
+import util.DataStore;
+import model.Sale;
 
 /**
  *
@@ -58,7 +61,7 @@ public class AddSalesFrame extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 24)); // NOI18N
         jLabel1.setText("Add New Sale");
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 255));
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
         jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel2.setText("Name:");
@@ -274,59 +277,108 @@ public class AddSalesFrame extends javax.swing.JFrame {
 
     private void btnAddSalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddSalesActionPerformed
         try {
-        // 1. Get values from UI
-        String name = txtName.getText();
-        String item = txtItem.getText();
-        String priceStr = txtPrice.getText();
-        String quantityStr = txtQuantity.getText();
-        String number = txtNumber.getText();
-        String status = cmbStatus.getSelectedItem().toString();
-        String paymentStatus = cmbPayment.getSelectedItem().toString();
-        
-        // 2. Validate (basic validation)
-        if (name.isEmpty() || item.isEmpty() || priceStr.isEmpty() || 
-            quantityStr.isEmpty() || number.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "All fields are required!", 
-                "Validation Error", 
-                JOptionPane.ERROR_MESSAGE);
-            return;
+            // 1. Get values from form
+            String name = txtName.getText().trim();
+            String item = txtItem.getText().trim();
+            String priceStr = txtPrice.getText().trim();
+            String quantityStr = txtQuantity.getText().trim();
+            String number = txtNumber.getText().trim();
+            String status = cmbStatus.getSelectedItem().toString();
+            String paymentStatus = cmbPayment.getSelectedItem().toString();
+
+            // 2. Validate inputs
+            if (name.isEmpty() || item.isEmpty() || priceStr.isEmpty()
+                    || quantityStr.isEmpty() || number.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "All fields are required!",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 3. Parse numbers
+            double price = Double.parseDouble(priceStr);
+            int quantity = Integer.parseInt(quantityStr);
+
+            if (price <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Price must be greater than 0",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (quantity <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Quantity must be greater than 0",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (number.length() < 10) {
+                JOptionPane.showMessageDialog(this,
+                        "Contact number must be at least 10 digits",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 4. Generate ID and create Sale
+            String id = DataStore.generateSaleId();
+            Sale newSale = new Sale(id, name, item, price, quantity,
+                    status, paymentStatus, number);
+
+            // 5. Add to DataStore
+            boolean success = DataStore.addSale(newSale);
+
+            if (success) {
+                // 6. Show success message
+                String message = "Sale added successfully!\n"
+                        + "Sale ID: " + id + "\n"
+                        + "Customer: " + name + "\n"
+                        + "Item: " + item + "\n"
+                        + "Total: $" + String.format("%.2f", price * quantity);
+
+                JOptionPane.showMessageDialog(this,
+                        message,
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                // 7. Clear form
+                btnClearActionPerformed(null);
+
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Failed to add sale. Please try again.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Price and Quantity must be numbers!",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        
-        // 3. Show confirmation (for now)
-        String message = "Sale will be added:\n" +
-                        "Name: " + name + "\n" +
-                        "Item: " + item + "\n" +
-                        "Price: $" + priceStr + "\n" +
-                        "Quantity: " + quantityStr + "\n" +
-                        "Status: " + status + "\n" +
-                        "Payment: " + paymentStatus;
-        
-        JOptionPane.showMessageDialog(this, 
-            message, 
-            "Confirm Sale", 
-            JOptionPane.INFORMATION_MESSAGE);
-            
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, 
-            "Error: " + e.getMessage(), 
-            "Error", 
-            JOptionPane.ERROR_MESSAGE);
-    }
     }//GEN-LAST:event_btnAddSalesActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
-        // Clear all text fields
         txtName.setText("");
         txtItem.setText("");
         txtPrice.setText("");
         txtQuantity.setText("");
         txtNumber.setText("");
-
-        // Reset combo boxes to first item
         cmbStatus.setSelectedIndex(0);
         cmbPayment.setSelectedIndex(0);
-        txtDate.setText("");
+
+        // Set focus to first field
+        txtName.requestFocus();
     }//GEN-LAST:event_btnClearActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed

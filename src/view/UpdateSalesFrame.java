@@ -3,7 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
-
+import util.DataStore;
+import model.Sale;
 import javax.swing.JOptionPane;
 
 /**
@@ -80,7 +81,7 @@ public class UpdateSalesFrame extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 24)); // NOI18N
         jLabel1.setText("Update Sales Detail");
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 255));
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
         jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel2.setText("Name:");
@@ -308,17 +309,17 @@ public class UpdateSalesFrame extends javax.swing.JFrame {
             }
 
             // Get updated values
-            String updatedName = txtName.getText();
-            String updatedItem = txtItem.getText();
-            String updatedPrice = txtPrice.getText();
-            String updatedQuantity = txtQuantity.getText();
-            String updatedNumber = txtNumber.getText();
-            String updatedStatus = cmbStatus.getSelectedItem().toString();
-            String updatedPayment = cmbPayment.getSelectedItem().toString();
+            String name = txtName.getText().trim();
+            String item = txtItem.getText().trim();
+            String priceStr = txtPrice.getText().trim();
+            String quantityStr = txtQuantity.getText().trim();
+            String number = txtNumber.getText().trim();
+            String status = cmbStatus.getSelectedItem().toString();
+            String payment = cmbPayment.getSelectedItem().toString();
 
             // Validate
-            if (updatedName.isEmpty() || updatedItem.isEmpty()
-                    || updatedPrice.isEmpty() || updatedQuantity.isEmpty()) {
+            if (name.isEmpty() || item.isEmpty() || priceStr.isEmpty()
+                    || quantityStr.isEmpty() || number.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                         "All fields are required!",
                         "Validation Error",
@@ -326,22 +327,48 @@ public class UpdateSalesFrame extends javax.swing.JFrame {
                 return;
             }
 
-            // Show what will be saved
-            String message = "Sale ID: " + currentSaleId + "\n"
-                    + "Updated to:\n"
-                    + "Name: " + updatedName + "\n"
-                    + "Item: " + updatedItem + "\n"
-                    + "Price: $" + updatedPrice + "\n"
-                    + "Quantity: " + updatedQuantity + "\n"
-                    + "Status: " + updatedStatus + "\n"
-                    + "Payment: " + updatedPayment;
+            double price = Double.parseDouble(priceStr);
+            int quantity = Integer.parseInt(quantityStr);
 
+            if (price <= 0 || quantity <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Price and Quantity must be greater than 0",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Create updated sale
+            Sale updatedSale = new Sale(currentSaleId, name, item, price, quantity,
+                    status, payment, new java.util.Date(), number);
+
+            // Update in DataStore
+            boolean success = DataStore.updateSale(currentSaleId, updatedSale);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this,
+                        "Sale updated successfully!\nSale ID: " + currentSaleId,
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                // Go back to SalesListFrame
+                SalesListFrame salesList = new SalesListFrame();
+                salesList.setLocation(this.getX(), this.getY());
+                salesList.setVisible(true);
+                this.dispose();
+
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Failed to update sale. Sale not found.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
-                    message,
-                    "Update Confirmation",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            // Later we'll actually save to DataStore here
+                    "Price and Quantity must be numbers!",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Error: " + e.getMessage(),
