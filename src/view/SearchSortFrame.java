@@ -4,9 +4,8 @@
  */
 package view;
 
-import util.DataStore;
+import controller.SalesController;
 import model.Sale;
-import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
@@ -83,7 +82,7 @@ public class SearchSortFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(24, 128, 0, 0);
         getContentPane().add(jLabel1, gridBagConstraints);
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 255));
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
         jLabel2.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
         jLabel2.setText("Search by order ID");
@@ -277,145 +276,137 @@ public class SearchSortFrame extends javax.swing.JFrame {
 
     private void btnSearchStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchStatusActionPerformed
         String searchStatus = cmbSearchStatus.getSelectedItem().toString().trim();
-
+        
         if (searchStatus.isEmpty() || searchStatus.equals("Select")) {
             JOptionPane.showMessageDialog(this,
-                    "Please select a status",
-                    "Selection Required",
-                    JOptionPane.WARNING_MESSAGE);
+                "Please select a status",
+                "Selection Required",
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        ArrayList<Sale> results = DataStore.searchByStatus(searchStatus);
-
+        
+        ArrayList<Sale> results = SalesController.searchByStatus(searchStatus);
+        
         if (results.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "No sales found with status: " + searchStatus,
-                    "Result",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            StringBuilder result = new StringBuilder();
-            result.append("Found ").append(results.size())
-                    .append(" sales with status '").append(searchStatus).append("':\n\n");
-
-            for (Sale sale : results) {
-                result.append("• ").append(sale.getId())
-                        .append(" - ").append(sale.getCustomerName())
-                        .append(" - ").append(sale.getItem())
-                        .append(" ($").append(sale.getTotal()).append(")")
-                        .append(" - Payment: ").append(sale.getPaymentStatus())
-                        .append("\n");
-            }
-
-            JOptionPane.showMessageDialog(this,
-                    result.toString(),
-                    "Search Results - Status: " + searchStatus,
-                    JOptionPane.INFORMATION_MESSAGE);
+                "No sales found with status: " + searchStatus,
+                "No Results",
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
+        
+        // Open SalesListFrame with results
+        SalesListFrame salesList = new SalesListFrame();
+        salesList.displayFilteredSales("searchResults", results);
+        salesList.setLocation(this.getX(), this.getY());
+        salesList.setVisible(true);
+        
+        this.dispose();
     }//GEN-LAST:event_btnSearchStatusActionPerformed
 
     private void btnSearchIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchIDActionPerformed
         String searchId = txtSearchID.getText().trim();
         if (searchId.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter ID", "Input Required", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "Please enter an ID", 
+                "Input Required", 
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        Sale foundSale = DataStore.getSaleById(searchId);
-
+        
+        Sale foundSale = SalesController.getSaleById(searchId);
+        
         if (foundSale == null) {
-            JOptionPane.showMessageDialog(this, "No sale found", "Result", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            String result = "ID: " + foundSale.getId() + "\n"
-                    + "Customer: " + foundSale.getCustomerName() + "\n"
-                    + "Item: " + foundSale.getItem() + "\n"
-                    + "Price: $" + foundSale.getPrice() + "\n"
-                    + "Status: " + foundSale.getStatus();
-            JOptionPane.showMessageDialog(this, result, "Search Result", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "No sale found with ID: " + searchId, 
+                "Not Found", 
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
+        
+        // Create list with just this sale
+        ArrayList<Sale> results = new ArrayList<>();
+        results.add(foundSale);
+        
+        // Open SalesListFrame with result
+        SalesListFrame salesList = new SalesListFrame();
+        salesList.displayFilteredSales("searchResults", results);
+        salesList.setLocation(this.getX(), this.getY());
+        salesList.setVisible(true);
+        
+        this.dispose();
     }//GEN-LAST:event_btnSearchIDActionPerformed
 
     private void btnSearchNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchNameActionPerformed
         String searchName = txtSearchName.getText().trim();
         if (searchName.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter name", "Input Required", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "Please enter a name", 
+                "Input Required", 
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        ArrayList<Sale> results = DataStore.searchByCustomerName(searchName);
-
+        
+        ArrayList<Sale> results = SalesController.searchByCustomerName(searchName);
+        
         if (results.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No sales found for: " + searchName, "Result", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            StringBuilder result = new StringBuilder("Found " + results.size() + " sales:\n\n");
-            for (Sale sale : results) {
-                result.append("• ").append(sale.getId())
-                        .append(" - ").append(sale.getCustomerName())
-                        .append(" - ").append(sale.getItem())
-                        .append(" ($").append(sale.getTotal()).append(")\n");
-            }
-            JOptionPane.showMessageDialog(this, result.toString(), "Search Results", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "No sales found for: " + searchName, 
+                "No Results", 
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
+        
+        // Open SalesListFrame with results
+        SalesListFrame salesList = new SalesListFrame();
+        salesList.displayFilteredSales("searchResults", results);
+        salesList.setLocation(this.getX(), this.getY());
+        salesList.setVisible(true);
+        
+        this.dispose();
     }//GEN-LAST:event_btnSearchNameActionPerformed
 
     private void btnSearchPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchPaymentActionPerformed
         String searchPayment = cmbSearchPayment.getSelectedItem().toString().trim();
-
+        
         if (searchPayment.isEmpty() || searchPayment.equals("Select")) {
             JOptionPane.showMessageDialog(this,
-                    "Please select a payment status",
-                    "Selection Required",
-                    JOptionPane.WARNING_MESSAGE);
+                "Please select a payment status",
+                "Selection Required",
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        ArrayList<Sale> results = DataStore.searchByPaymentStatus(searchPayment);
-
+        
+        ArrayList<Sale> results = SalesController.searchByPaymentStatus(searchPayment);
+        
         if (results.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "No sales found with payment status: " + searchPayment,
-                    "Result",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            StringBuilder result = new StringBuilder();
-            result.append("Found ").append(results.size())
-                    .append(" sales with payment status '").append(searchPayment).append("':\n\n");
-
-            for (Sale sale : results) {
-                result.append("• ").append(sale.getId())
-                        .append(" - ").append(sale.getCustomerName())
-                        .append(" - ").append(sale.getItem())
-                        .append(" ($").append(sale.getTotal()).append(")")
-                        .append(" - Status: ").append(sale.getStatus())
-                        .append("\n");
-            }
-
-            JOptionPane.showMessageDialog(this,
-                    result.toString(),
-                    "Search Results - Payment: " + searchPayment,
-                    JOptionPane.INFORMATION_MESSAGE);
+                "No sales found with payment status: " + searchPayment,
+                "No Results",
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
+        
+        // Open SalesListFrame with results
+        SalesListFrame salesList = new SalesListFrame();
+        salesList.displayFilteredSales("searchResults", results);
+        salesList.setLocation(this.getX(), this.getY());
+        salesList.setVisible(true);
+        
+        this.dispose();
     }//GEN-LAST:event_btnSearchPaymentActionPerformed
 
     private void btnSortDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSortDateActionPerformed
-        DataStore.sortByDate();
-        ArrayList<Sale> sortedSales = DataStore.getAllSales();
-
-        StringBuilder result = new StringBuilder();
-        result.append("Sales sorted by Date (Newest First):\n\n");
-
-        for (Sale sale : sortedSales) {
-            String shortDate = sale.getSaleDate().toString().substring(0, 16);
-            result.append("• ").append(shortDate)
-                    .append(" - ").append(sale.getCustomerName())
-                    .append(" - ").append(sale.getItem())
-                    .append(" (ID: ").append(sale.getId()).append(")\n");
-        }
-
-        JOptionPane.showMessageDialog(this,
-                result.toString(),
-                "Sorted by Date",
-                JOptionPane.INFORMATION_MESSAGE);
+        SalesController.sortByDate();
+        ArrayList<Sale> sortedSales = SalesController.getAllSales();
+        
+        // Open SalesListFrame with sorted data
+        SalesListFrame salesList = new SalesListFrame();
+        salesList.displayFilteredSales("sortedByDate", sortedSales);
+        salesList.setLocation(this.getX(), this.getY());
+        salesList.setVisible(true);
+        
+        this.dispose();
     }//GEN-LAST:event_btnSortDateActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
@@ -425,23 +416,16 @@ public class SearchSortFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnSortPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSortPriceActionPerformed
-        DataStore.sortByPrice();
-        ArrayList<Sale> sortedSales = DataStore.getAllSales();
-
-        StringBuilder result = new StringBuilder();
-        result.append("Sales sorted by Price (Low to High):\n\n");
-
-        for (Sale sale : sortedSales) {
-            result.append("• $").append(String.format("%.2f", sale.getPrice()))
-                    .append(" - ").append(sale.getItem())
-                    .append(" - ").append(sale.getCustomerName())
-                    .append(" (ID: ").append(sale.getId()).append(")\n");
-        }
-
-        JOptionPane.showMessageDialog(this,
-                result.toString(),
-                "Sorted by Price",
-                JOptionPane.INFORMATION_MESSAGE);
+        SalesController.sortByPrice();
+        ArrayList<Sale> sortedSales = SalesController.getAllSales();
+        
+        // Open SalesListFrame with sorted data
+        SalesListFrame salesList = new SalesListFrame();
+        salesList.displayFilteredSales("sortedByPrice", sortedSales);
+        salesList.setLocation(this.getX(), this.getY());
+        salesList.setVisible(true);
+        
+        this.dispose();
     }//GEN-LAST:event_btnSortPriceActionPerformed
 
     /**

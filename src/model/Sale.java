@@ -5,7 +5,7 @@ import java.util.Date;
 public class Sale {
 
     // Fields/Attributes
-    private String id;           // Auto-generated (e.g., "SALE001")
+    private String id;           // Auto-generated
     private String customerName;
     private String item;
     private double price;
@@ -15,27 +15,26 @@ public class Sale {
     private Date saleDate;
     private String contactNumber;
 
-    // Main constructor with ALL parameters (including date)
+    // Main constructor with ALL parameters 
     public Sale(String id, String customerName, String item, double price,
             int quantity, String status, String paymentStatus,
-            Date saleDate, String contactNumber) {  // Add Date saleDate parameter
+            Date saleDate, String contactNumber) { 
         this.id = id;
         this.customerName = customerName;
         this.item = item;
         this.price = price;
         this.quantity = quantity;
         this.status = status;
-        this.paymentStatus = paymentStatus;  // Use parameter, not field
-        this.saleDate = saleDate;  // Use parameter
+        this.paymentStatus = paymentStatus;  
+        this.saleDate = saleDate;  
         this.contactNumber = contactNumber;
     }
-
-// Overloaded constructor WITHOUT date parameter - auto-sets to current date
+    
     public Sale(String id, String customerName, String item, double price,
             int quantity, String status, String paymentStatus,
             String contactNumber) {
         this(id, customerName, item, price, quantity, status, paymentStatus,
-                new Date(), contactNumber);  // Calls main constructor with current date
+                new Date(), contactNumber); 
     }
 
     // Getters and Setters

@@ -5,7 +5,7 @@
 package view;
 
 import javax.swing.JOptionPane;
-import util.DataStore;
+import controller.SalesController;
 import model.Sale;
 
 /**
@@ -22,6 +22,8 @@ public class AddSalesFrame extends javax.swing.JFrame {
     public AddSalesFrame() {
         initComponents();
         setLocationRelativeTo(null);
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        txtDate.setText(sdf.format(new java.util.Date()));
     }
 
     /**
@@ -277,18 +279,19 @@ public class AddSalesFrame extends javax.swing.JFrame {
 
     private void btnAddSalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddSalesActionPerformed
         try {
-            // 1. Get values from form
+            //Get values from form
             String name = txtName.getText().trim();
             String item = txtItem.getText().trim();
             String priceStr = txtPrice.getText().trim();
             String quantityStr = txtQuantity.getText().trim();
             String number = txtNumber.getText().trim();
+            String dateStr = txtDate.getText().trim();  // NEW: Get date
             String status = cmbStatus.getSelectedItem().toString();
             String paymentStatus = cmbPayment.getSelectedItem().toString();
 
-            // 2. Validate inputs
+            //Validate inputs
             if (name.isEmpty() || item.isEmpty() || priceStr.isEmpty()
-                    || quantityStr.isEmpty() || number.isEmpty()) {
+                    || quantityStr.isEmpty() || number.isEmpty() || dateStr.isEmpty()) { // Added date check
                 JOptionPane.showMessageDialog(this,
                         "All fields are required!",
                         "Validation Error",
@@ -296,7 +299,30 @@ public class AddSalesFrame extends javax.swing.JFrame {
                 return;
             }
 
-            // 3. Parse numbers
+            //Validate date format
+            if (!dateStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                JOptionPane.showMessageDialog(this,
+                        "Date must be in YYYY-MM-DD format (e.g., 2024-12-24)",
+                        "Invalid Date Format",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            //Parse date
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date saleDate = sdf.parse(dateStr);
+
+            //Validate date is not in future
+            java.util.Date today = new java.util.Date();
+            if (saleDate.after(today)) {
+                JOptionPane.showMessageDialog(this,
+                        "Sale date cannot be in the future!",
+                        "Invalid Date",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            //Parse numbers
             double price = Double.parseDouble(priceStr);
             int quantity = Integer.parseInt(quantityStr);
 
@@ -324,28 +350,29 @@ public class AddSalesFrame extends javax.swing.JFrame {
                 return;
             }
 
-            // 4. Generate ID and create Sale
-            String id = DataStore.generateSaleId();
+            //Generate ID and create Sale
+            String id = SalesController.generateSaleId();
             Sale newSale = new Sale(id, name, item, price, quantity,
-                    status, paymentStatus, number);
+                    status, paymentStatus, saleDate, number);
 
-            // 5. Add to DataStore
-            boolean success = DataStore.addSale(newSale);
+            //Add to DataStore
+            boolean success = SalesController.addSale(newSale);
 
             if (success) {
-                // 6. Show success message
-                String message = "Sale added successfully!\n"
+                // 9. Show success message
+                String message = "✅ Sale added successfully!\n\n"
                         + "Sale ID: " + id + "\n"
                         + "Customer: " + name + "\n"
                         + "Item: " + item + "\n"
-                        + "Total: $" + String.format("%.2f", price * quantity);
+                        + "Total: $" + String.format("%.2f", price * quantity) + "\n"
+                        + "Date: " + dateStr;
 
                 JOptionPane.showMessageDialog(this,
                         message,
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                // 7. Clear form
+                //Clear form
                 btnClearActionPerformed(null);
 
             } else {
@@ -355,6 +382,11 @@ public class AddSalesFrame extends javax.swing.JFrame {
                         JOptionPane.ERROR_MESSAGE);
             }
 
+        } catch (java.text.ParseException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Invalid date! Please use format: YYYY-MM-DD",
+                    "Date Error",
+                    JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
                     "Price and Quantity must be numbers!",
@@ -374,6 +406,11 @@ public class AddSalesFrame extends javax.swing.JFrame {
         txtPrice.setText("");
         txtQuantity.setText("");
         txtNumber.setText("");
+
+        // Reset date to today
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        txtDate.setText(sdf.format(new java.util.Date()));
+
         cmbStatus.setSelectedIndex(0);
         cmbPayment.setSelectedIndex(0);
 

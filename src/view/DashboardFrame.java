@@ -4,7 +4,7 @@
  */
 package view;
 
-import util.DataStore;
+import controller.SalesController;
 import model.Sale;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
@@ -33,16 +33,16 @@ public class DashboardFrame extends javax.swing.JFrame {
      */
     private void loadDashboardData() {
         try {
-            // 1. Load statistics
-            String[] stats = DataStore.getDashboardStats();
+            //Load statistics
+            String[] stats = SalesController.getDashboardStats();
             lblTotalOrdersValue.setText(stats[0]);      // Total Orders
             lblPendingValue.setText(stats[1]);          // Pending Orders
             lblSoldValue.setText(stats[2]);       // Sold
 
-            // 2. Load recent sales (last 10)
-            ArrayList<Sale> recentSales = DataStore.getRecentSales(10);
+            //Load recent sales
+            ArrayList<Sale> recentSales = SalesController.getRecentSales(10);
 
-            // 3. Create table model
+            //Create table model
             String[] columns = {"ID", "Customer", "Item", "Price", "Qty", "Total", "Status", "Payment", "Date"};
             DefaultTableModel model = new DefaultTableModel(columns, 0) {
                 @Override
@@ -51,7 +51,7 @@ public class DashboardFrame extends javax.swing.JFrame {
                 }
             };
 
-            // 4. Add sales to table
+            //Add sales to table
             for (Sale sale : recentSales) {
                 Object[] row = {
                     sale.getId(),
@@ -67,10 +67,10 @@ public class DashboardFrame extends javax.swing.JFrame {
                 model.addRow(row);
             }
 
-            // 5. Set model to table
+            //Set model to table
             tblRecentSales.setModel(model);
 
-            // 6. Auto-resize columns
+            //Auto-resize columns
             for (int i = 0; i < tblRecentSales.getColumnCount(); i++) {
                 tblRecentSales.getColumnModel().getColumn(i).setPreferredWidth(100);
             }

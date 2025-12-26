@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
-import util.DataStore;
+import controller.SalesController;
 import model.Sale;
 import javax.swing.JOptionPane;
 
@@ -33,8 +33,6 @@ public class UpdateSalesFrame extends javax.swing.JFrame {
         this.currentSaleId = id; // Store the ID
 
         // Fill the form fields
-        // If you have a label to show ID:
-        // lblSaleId.setText("ID: " + id);
         txtName.setText(name);
         txtItem.setText(item);
         txtPrice.setText(price);
@@ -81,7 +79,7 @@ public class UpdateSalesFrame extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 24)); // NOI18N
         jLabel1.setText("Update Sales Detail");
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
 
         jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel2.setText("Name:");
@@ -343,7 +341,7 @@ public class UpdateSalesFrame extends javax.swing.JFrame {
                     status, payment, new java.util.Date(), number);
 
             // Update in DataStore
-            boolean success = DataStore.updateSale(currentSaleId, updatedSale);
+            boolean success = SalesController.updateSale(currentSaleId, updatedSale);
 
             if (success) {
                 JOptionPane.showMessageDialog(this,

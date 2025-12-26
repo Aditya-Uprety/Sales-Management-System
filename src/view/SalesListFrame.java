@@ -5,7 +5,7 @@
 package view;
 
 import javax.swing.JOptionPane;
-import util.DataStore;
+import controller.SalesController;
 import model.Sale;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
@@ -16,6 +16,8 @@ import java.util.ArrayList;
  */
 public class SalesListFrame extends javax.swing.JFrame {
 
+    private ArrayList<Sale> currentDisplayList = null;
+    private String currentFilterType = "all";
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(SalesListFrame.class.getName());
 
     /**
@@ -34,10 +36,16 @@ public class SalesListFrame extends javax.swing.JFrame {
      */
     private void loadSalesTable() {
         try {
-            // 1. Get all sales
-            ArrayList<Sale> allSales = DataStore.getAllSales();
+            // Decide which data to display
+            ArrayList<Sale> salesToDisplay;
 
-            // 2. Create table model
+            if (currentDisplayList != null && !currentDisplayList.isEmpty()) {
+                salesToDisplay = currentDisplayList;
+            } else {
+                salesToDisplay = SalesController.getAllSales();
+            }
+
+            // Create table model
             String[] columns = {"ID", "Customer Name", "Item", "Price", "Quantity",
                 "Total", "Status", "Payment", "Contact Number", "Date"};
             DefaultTableModel model = new DefaultTableModel(columns, 0) {
@@ -47,8 +55,8 @@ public class SalesListFrame extends javax.swing.JFrame {
                 }
             };
 
-            // 3. Add sales to table
-            for (Sale sale : allSales) {
+            // Add sales to table
+            for (Sale sale : salesToDisplay) {
                 Object[] row = {
                     sale.getId(),
                     sale.getCustomerName(),
@@ -64,16 +72,25 @@ public class SalesListFrame extends javax.swing.JFrame {
                 model.addRow(row);
             }
 
-            // 4. Set model to table
+            // Set model to table
             tblSalesList.setModel(model);
 
-            // 5. Auto-resize columns
+            // Auto-resize columns
             for (int i = 0; i < tblSalesList.getColumnCount(); i++) {
                 tblSalesList.getColumnModel().getColumn(i).setPreferredWidth(120);
             }
 
-            // 6. Update row count label (if you have one)
-            // lblRowCount.setText("Total Sales: " + allSales.size());
+            // Show filter info (optional)
+            if (currentFilterType.equals("sortedByPrice")) {
+                // lblTitle.setText("Sales Sorted by Price (Low to High)");
+            } else if (currentFilterType.equals("sortedByDate")) {
+                // lblTitle.setText("Sales Sorted by Date (Newest First)");
+            } else if (currentFilterType.equals("searchResults")) {
+                // lblTitle.setText("Search Results");
+            } else {
+                // lblTitle.setText("All Sales");
+            }
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Error loading sales: " + e.getMessage(),
@@ -91,8 +108,10 @@ public class SalesListFrame extends javax.swing.JFrame {
         tblSalesList = new javax.swing.JTable();
         btnBack = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
-        btnRefresh = new javax.swing.JButton();
+        btnShowAll = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
+        btnSearchSort = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -242,17 +261,37 @@ public class SalesListFrame extends javax.swing.JFrame {
             }
         });
 
-        btnRefresh.setBackground(new java.awt.Color(243, 156, 18));
-        btnRefresh.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        btnRefresh.setForeground(new java.awt.Color(255, 255, 255));
-        btnRefresh.setText("Refresh");
-        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+        btnShowAll.setBackground(new java.awt.Color(243, 156, 18));
+        btnShowAll.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
+        btnShowAll.setForeground(new java.awt.Color(255, 255, 255));
+        btnShowAll.setText("Show all");
+        btnShowAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRefreshActionPerformed(evt);
+                btnShowAllActionPerformed(evt);
             }
         });
 
         jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
+
+        btnSearchSort.setBackground(new java.awt.Color(108, 92, 231));
+        btnSearchSort.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
+        btnSearchSort.setForeground(new java.awt.Color(255, 255, 255));
+        btnSearchSort.setText("Search / Sort");
+        btnSearchSort.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchSortActionPerformed(evt);
+            }
+        });
+
+        btnDelete.setBackground(new java.awt.Color(255, 0, 0));
+        btnDelete.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
+        btnDelete.setForeground(new java.awt.Color(255, 255, 255));
+        btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -260,13 +299,17 @@ public class SalesListFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(63, 63, 63)
-                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 190, Short.MAX_VALUE)
-                .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(188, 188, 188)
-                .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(49, 49, 49))
+                .addGap(32, 32, 32)
+                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(67, 67, 67)
+                .addComponent(btnShowAll, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(68, 68, 68)
+                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                .addComponent(btnSearchSort, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(72, 72, 72)
+                .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
@@ -287,22 +330,32 @@ public class SalesListFrame extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnShowAll, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearchSort, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(42, 42, 42))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    public void displayFilteredSales(String filterType, ArrayList<Sale> sales) {
+        this.currentFilterType = filterType;
+        this.currentDisplayList = sales;
+        loadSalesTable(); // Reload table with new data
+    }
 
-    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
-        loadSalesTable();
+    private void btnShowAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowAllActionPerformed
+        currentDisplayList = null; // Clear filter
+        currentFilterType = "all";
+        loadSalesTable(); // Show all sales
+
         JOptionPane.showMessageDialog(this,
-                "Table refreshed!",
-                "Refresh",
+                "Showing all sales",
+                "Show All",
                 JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_btnRefreshActionPerformed
+    }//GEN-LAST:event_btnShowAllActionPerformed
 
     private void btnUpdateMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_btnUpdateMouseWheelMoved
         // TODO add your handling code here:
@@ -352,6 +405,72 @@ public class SalesListFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
+    private void btnSearchSortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchSortActionPerformed
+        SearchSortFrame searchSort = new SearchSortFrame();
+        searchSort.setLocation(this.getX(), this.getY());
+        searchSort.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnSearchSortActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        try {
+            int selectedRow = tblSalesList.getSelectedRow();
+
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this,
+                        "Please select a sale to delete",
+                        "No Selection",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Get the selected sale's ID
+            String selectedId = tblSalesList.getValueAt(selectedRow, 0).toString();
+            String customerName = tblSalesList.getValueAt(selectedRow, 1).toString();
+            String item = tblSalesList.getValueAt(selectedRow, 2).toString();
+
+            // Show confirmation dialog
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete this sale?\n\n"
+                    + "ID: " + selectedId + "\n"
+                    + "Customer: " + customerName + "\n"
+                    + "Item: " + item + "\n\n"
+                    + "This action cannot be undone!",
+                    "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Delete from DataStore
+                boolean success = SalesController.deleteSale(selectedId);
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this,
+                            "Sale deleted successfully!\n"
+                            + "ID: " + selectedId + " has been removed.",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    // Refresh the table
+                    loadSalesTable();
+
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Failed to delete sale.\n"
+                            + "Sale ID " + selectedId + " not found.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error deleting sale: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -379,7 +498,9 @@ public class SalesListFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
-    private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnSearchSort;
+    private javax.swing.JButton btnShowAll;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
